@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>longest collaborative sentence [remixed]</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <button id="aboutBtn">Colophon</button>
+
+  <div id="viewport">
+    <div id="content">loading…</div>
+    <div id="obscureControls">
+      <button data-mode="block" class="active">Block</button>
+      <span class="separator">|</span>
+      <button data-mode="blur">Blur</button>
+      <span class="separator">|</span>
+      <button data-mode="dots">Diffusion</button>
+      <span class="separator">|</span>
+      <button data-mode="zalgo">Zalgo</button>
+    </div>
+  </div>
+
+  <div id="colophon">
+    <div id="colophonContent">
+      <h2>Colophon</h2>
+      <p>
+        <strong>Title:</strong> longest collaborative sentence [remixed]<br>
+        <strong>Editor:</strong>
+        <a href="https://marywildesign.com" target="_blank" rel="noopener noreferrer">
+          Mary G. Wilson
+        </a>
+      </p>
+      <h3>Acknowledgements</h3>
+      <p>
+        With thanks to the staff of the
+        <a href="https://artport.whitney.org/collection/DouglasDavis/live/Sentence/sentence1.html"
+          target="_blank" rel="noopener noreferrer">
+          Whitney Museum of American Art
+        </a>
+        for permission to work with Douglas Davis’ <em>The World’s Longest Collaborative Sentence</em>
+        (1994–2012).
+      </p>
+      <h3>Notes</h3>
+      <p>
+        <em>longest collaborative sentence [remixed]</em> emerged from an MA Experiments course
+        exploring ways of expanding Guttorm Nordø’s mail art publication <em>El Djarida</em>.
+        The project shifts this investigation into the digital realm, using Douglas Davis’
+        internet-based collaborative artwork as a point of departure.
+      </p>
+      <p>
+        Davis’ sentence—open, anonymous, and unmoderated—offers an early and revealing example
+        of digital freedom of expression. Its accumulation of voices exposes the tension between
+        openness and harm, raising questions about where responsibility lies when collective authorship
+        is left unchecked.
+      </p>
+      <p>
+        This website presents the original sentence as a continuously autoscrolling text,
+        transforming it into a typographic environment rather than a fixed document.
+        Multiple censorship modes allow readers to choose how the text is obscured,
+        while never revealing the censored words themselves. In doing so, the project
+        shifts the act of moderation from platform to user, creating a paradox in which
+        censorship is both participatory and invisible.
+      </p>
+      <p>
+        Some methods of obscuring language are intentionally disruptive, introducing friction
+        and visual noise, while others remain subtle and ambient. This spectrum reflects the
+        varied approaches to moderation found in digital communities—from heavy-handed suppression
+        to nuanced content management—and asks how each shapes participation, responsibility,
+        and collective authorship.
+      </p>
+      <h3>Design & Implementation</h3>
+      <p>
+        The text autoscrolls to evoke continuity and flow, contrasting the finite, physical nature
+        of mail art publications. Source material was collected via Python-based web scraping,
+        conducted with permission, to preserve the integrity of the original work.
+      </p>
+      <p>
+        Censorship decisions were informed by close reading of the sentence, accounting not only
+        for explicit language but also for subtler forms of aggression. Accessibility and reading
+        patterns were considered throughout, particularly in the design of the obscuring methods.
+      </p>
+      <p>
+        <strong>Primary typeface:</strong> Libre Baskerville<br>
+        <strong>Date:</strong> 11 · 11 · 2025
+      </p>
+      <button id="closeColophon">Close</button>
+    </div>
+  </div>
+
+<script src="script.js"></script>
+</body>
+</html>
