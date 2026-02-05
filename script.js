@@ -2,6 +2,8 @@ const contentEl = document.getElementById('content');
 const viewportEl = document.getElementById('viewport');
 const colophon = document.getElementById('colophon');
 const aboutBtn = document.getElementById('aboutBtn');
+const closeBtn = document.getElementById('closeColophon');
+
 let maxScroll = 0;
 let speed = 40;
 let running = false;
@@ -10,15 +12,120 @@ let rafId;
 let currentMode = 'block';
 let originalText = '';
 
-// Banned words
+// Zalgo Diacritics
+const upDiac = '̡̧̢̛̤̪̫̬̭̮̯̰̱̲̳̍̎̄̅̿̑̐̇̈̉̊̋̓̔̽͂̆̚';
+const midDiac = '̡̢̧̨̨̢̡̨̨̨̢̛̛̙̜̝̞̤̥̩̪̫̬̭̮̯̰̱̕̚';
+const downDiac = '̖̗̘̙̜̝̞̟̠̤̥̦̩̪̫̬̭̮̯̰̱̲̳̖̗̘̙̍̎̏̿̑̐̇̈̉̊̋̌̓̔̚̕̚';
+
+// Simple low-fi loader to improve perceived performance
+async function loadText(){
+  try {
+    const resp = await fetch('full.txt');
+    if(!resp.ok) throw new Error('Could not load full.txt');
+    originalText = await resp.text();
+
+    // Apply low-fidelity first (just block placeholders)
+    contentEl.innerHTML = originalText.replace(/\S/g, '█');
+
+    setTimeout(() => applyObscure(originalText), 300); // High fidelity after 0.3s
+
+    requestAnimationFrame(()=> {
+      maxScroll = contentEl.scrollHeight - viewportEl.clientHeight;
+      if(maxScroll < 0) maxScroll = 0;
+      start();
+    });
+  } catch(err) {
+    contentEl.textContent = 'Error loading full.txt — ' + err.message;
+  }
+}
+
+// Obscuring functions
+function dotify(word){
+  const dotGlyphs = ['·','‧','∙','⋅','◦','•','◌','✧','⁂','¨','˚','∘','⋅'];
+  const targetLen = word.length*4;
+  let result='';
+  for(let i=0;i<targetLen;i++){
+    result += Math.random()>0.35? dotGlyphs[Math.floor(Math.random()*dotGlyphs.length)]:'\u200B';
+  }
+  return result;
+}
+
+function zalgoize(word){
+  let result='';
+  word.split('').forEach(char=>{
+    let zalgoChar = char;
+    for(let i=0;i<Math.floor(Math.random()*5)+3;i++) zalgoChar+=upDiac[Math.floor(Math.random()*upDiac.length)];
+    for(let i=0;i<Math.floor(Math.random()*4)+2;i++) zalgoChar+=midDiac[Math.floor(Math.random()*midDiac.length)];
+    for(let i=0;i<Math.floor(Math.random()*5)+4;i++) zalgoChar+=downDiac[Math.floor(Math.random()*downDiac.length)];
+    result+=zalgoChar;
+  });
+  return result;
+}
+
+// Main text processing
+function processText(text){
+  const escaped = [...new Set(bannedWords)].map(w=>w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
+  const rx = new RegExp(`\\b(${escaped.join('|')})\\b`,'gi');
+
+  return text.replace(rx, word=>{
+    switch(currentMode){
+      case 'blur': return `<span class="blur">${word}</span>`;
+      case 'dots': return `<span class="dots">${dotify(word)}</span>`;
+      case 'zalgo': return `<span class="zalgo">${zalgoize(word)}</span>`;
+      default: return `<span class="blocked">█</span>`.repeat(word.length);
+    }
+  });
+}
+
+function applyObscure(rawText){
+  contentEl.innerHTML = processText(rawText);
+}
+
+// Control buttons
+document.querySelectorAll('#obscureControls button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    currentMode=btn.dataset.mode;
+    document.querySelectorAll('#obscureControls button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    if(originalText) applyObscure(originalText);
+  });
+});
+
+// Colophon open/close
+aboutBtn.onclick = ()=> colophon.classList.add('open');
+closeBtn.onclick = ()=> colophon.classList.remove('open');
+
+document.addEventListener('click',(e)=>{
+  if(!colophon.contains(e.target) && !aboutBtn.contains(e.target)){
+    colophon.classList.remove('open');
+  }
+});
+
+// Autoscroll
+function start(){
+  if(running) return;
+  running=true;
+  lastFrame=performance.now();
+  rafId=requestAnimationFrame(tick);
+}
+
+function tick(now){
+  const dt=(now-lastFrame)/1000;
+  viewportEl.scrollTop+=speed*dt;
+  if(viewportEl.scrollTop>=maxScroll) viewportEl.scrollTop=0;
+  lastFrame=now;
+  rafId=requestAnimationFrame(tick);
+}
+
+// Banned words array (kept unchanged)
 const bannedWords = [
   "fuck","shit","bastard","bitch","cunt","whore","slut","cancer",
   "damn","asshole","ass","dick","cock","pussy","prick","bollocks","arse",
-  "twat","dyke","faggot","fag","slapper","slag","skank",
+  "twat","dyke","faggot","fag","slapper","slag","skank","nigga","n*gga","n*ggas",
   "nigger","spic","chink","gook","kike","yid","hebe","wop","coon","jap","slant",
   "raghead","sandnigger","towelhead","paki","gypsy","gyppo","oriental","dago",
-  "shylock","juden","yahudi",
-  "tranny","queer","homo","shemale",
+  "shylock","juden","yahudi","hitler","holocaust",
+  "tranny","queer","homo","shemale","tr*ns","c*ck","p*ssy",
   "cum","cumshot","boobs","tits","nips","nipples","vagina","penis",
   "anus","butt","rectum","balls","testicles","orgasm","ejaculate","semen",
   "blowjob","bj","handjob","masturbate","fap","hentai","porn","sex","fetish","kink","violated",
@@ -120,82 +227,5 @@ const bannedWords = [
   "kill the","murder the","lynch the","hang the","beat the","burn the","shoot the","stab the", "sexual", "deviance","fetish",
   "gay","fucking","death","strip","striptease","bang","crap", "fuckfuckfuck","fuuck","fuuuck","fuuuuck","fuuuuuck","lube","latex","thigh","suck","sucks"
 ];
-
-function escapeRegex(w) { return w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
-
-function zalgoize(word){
-  const up = '̡̧̛̍̎̄̅̿̑̐̇̈̉̊̋̓̔̽͂̓̈́͊͋͌̃̂̌̕';
-  const mid = '̨̢̢̡̨̨̨̢̛̕';
-  const down = '̖̗̘̙̜̝̞̟̠̤̥̦̩̪̚';
-  return word.split('').map(c => c +
-      up[Math.floor(Math.random()*up.length)] +
-      mid[Math.floor(Math.random()*mid.length)] +
-      down[Math.floor(Math.random()*down.length)]
-  ).join('');
-}
-
-function dotify(word){ return '•'.repeat(word.length); }
-
-function processText(text){
-  const escaped = [...new Set(bannedWords)].map(escapeRegex);
-  const rx = new RegExp(`\\b(${escaped.join('|')})\\b`, 'gi');
-
-  return text.replace(rx, word => {
-    switch(currentMode){
-      case 'blur': return `<span class="blur">${word}</span>`;
-      case 'dots': return `<span class="dots">${dotify(word)}</span>`;
-      case 'zalgo': return `<span class="zalgo">${zalgoize(word)}</span>`;
-      default: return '█'.repeat(word.length);
-    }
-  });
-}
-
-function applyObscure(rawText){
-  contentEl.innerHTML = processText(rawText);
-}
-
-document.querySelectorAll('#obscureControls button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    currentMode = btn.dataset.mode;
-    document.querySelectorAll('#obscureControls button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    if(originalText) applyObscure(originalText);
-  });
-});
-
-aboutBtn.onclick = () => colophon.classList.add('open');
-document.getElementById('closeColophon').onclick = () => colophon.classList.remove('open');
-
-async function loadText(){
-  try {
-    const resp = await fetch('full.txt');
-    if(!resp.ok) throw new Error('Could not load full.txt');
-    originalText = await resp.text();
-    applyObscure(originalText);
-
-    requestAnimationFrame(()=> {
-      maxScroll = contentEl.scrollHeight - viewportEl.clientHeight;
-      if(maxScroll < 0) maxScroll = 0;
-      start();
-    });
-  } catch(err) {
-    contentEl.textContent = 'Error loading full.txt — ' + err.message;
-  }
-}
-
-function start(){
-  if(running) return;
-  running = true;
-  lastFrame = performance.now();
-  rafId = requestAnimationFrame(tick);
-}
-
-function tick(now){
-  const dt = (now - lastFrame)/1000;
-  viewportEl.scrollTop += speed*dt;
-  if(viewportEl.scrollTop >= maxScroll) viewportEl.scrollTop = 0;
-  lastFrame = now;
-  rafId = requestAnimationFrame(tick);
-}
 
 window.addEventListener('load', loadText);

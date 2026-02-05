@@ -1,27 +1,27 @@
 html, body {
-  margin:0;
-  height:100%;
-  overflow:hidden;
-  background:#121212; /* dark background for text */
-  color:#f7f7f7;
-  font-family: "Libre Baskerville", serif;
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #121212;
+  color: #f7f7f7;
+  font-family: "Fraunces", serif;
+  font-weight: 100;
   text-align: justify;
 }
 
 #viewport {
-  position:fixed;
-  inset:0;
-  overflow:hidden;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
 }
 
 #content {
-  position:absolute;
-  top:0; left:0; right:0;
-  white-space:normal;
-  padding:40px;
-  line-height:1.45;
-  font-size:14px;
-  text-transform:none;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  white-space: normal;
+  padding: 40px;
+  line-height: 1.45;
+  font-size: 14px;
 }
 
 a, a:visited, a:active {
@@ -29,27 +29,35 @@ a, a:visited, a:active {
   text-decoration: underline;
 }
 
-a:hover {
-  color: #e2e2e2;
-  opacity: 0.8;
-}
+a:hover { color: #e2e2e2; opacity: 0.8; }
 
-#aboutBtn {
+#aboutBtn, #closeColophon {
+  font-family: 'Fraunces', serif;
+  font-weight: 100;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: #121212;
+  background-color: #f7f7f7;
+  padding: 8px 14px;
   position: fixed;
   top: 16px;
   right: 40px;
   z-index: 10;
-  border: none;
-  color: #121212;
-  padding: 8px 14px;
-  cursor: pointer;
-  font-size: 12px;
-  font-family: "Libre Baskerville", serif;
-  background-color: #f7f7f7;
 }
 
-#aboutBtn:hover {
+#aboutBtn:hover, #closeColophon:hover,
+#aboutBtn.active, #closeColophon.active {
+  text-decoration: line-through;
   font-style: italic;
+}
+
+#closeColophon {
+  display: none;
+}
+
+#colophon.open ~ #closeColophon {
+  display: block;
 }
 
 #colophon {
@@ -65,20 +73,25 @@ a:hover {
   overflow-y: auto;
 }
 
-#colophon.open {
-  right: 0;
-}
+#colophon.open { right: 0; }
 
 #colophonContent {
-  padding: 32px;
-  font-size: 12px;
+  padding: 80px 32px 32px 32px;
+  font-size: 14px;
   text-align: left;
 }
 
-#colophonContent h3,
-#colophonContent h4 {
+#colophonContent h2 {
+  font-size: 16px;
+  font-weight: 100;
+  text-decoration: underline;
+  margin-bottom: 24px;
+}
+
+#colophonContent h3, #colophonContent h4 {
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 100;
+  text-decoration: underline;
   margin-top: 16px;
   margin-bottom: 8px;
 }
@@ -88,21 +101,11 @@ a:hover {
   padding: 8px 16px;
   border: none;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
   color: #121212;
   background-color: #f7f7f7;
-}
-
-#closeColophon {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  padding: 4px 8px;
-  background-color: #121212;
-  color: #f7f7f7;
-  border: 1px solid #f7f7f7;
-  cursor: pointer;
-  font-size: 12px;
+  font-family: monospace;
+  font-weight: 100;
 }
 
 #obscureControls {
@@ -115,14 +118,15 @@ a:hover {
   font-size: 14px;
   text-align: center;
   padding: 10px 0;
-  font-family: "Libre Baskerville", serif;
+  font-weight: 100;
   z-index: 10;
 }
 
 #obscureControls button {
   background: none;
   border: none;
-  font-family: inherit;
+  font-family: monospace;
+  font-weight: 100;
   font-size: inherit;
   cursor: pointer;
   color: #121212;
@@ -131,8 +135,8 @@ a:hover {
 
 #obscureControls button.active,
 #obscureControls button:hover {
-  font-style: italic;
   text-decoration: line-through;
+  font-style: italic;
 }
 
 #obscureControls span.separator {
@@ -140,18 +144,7 @@ a:hover {
   color: #121212;
 }
 
-.blur {
-  filter: blur(4px);
-}
-
-.dots {
-  letter-spacing: 0.05em;
-}
-
-.zalgo {
-  unicode-bidi: isolate;
-}
-
-.blocked {
-  font-weight: bold;
-}
+.blur { filter: blur(4px); }
+.dots { letter-spacing: 0.08em; font-size: 110%; }
+.zalgo { unicode-bidi: isolate; font-size: 115%; letter-spacing: 0.04em; line-height: 0.85; position: relative; z-index: 5; }
+.blocked { font-weight: bold; text-decoration: line-through; }
