@@ -11,20 +11,30 @@ let lastFrame = 0;
 let rafId;
 let currentMode = 'block';
 let originalText = '';
-let processedHTML = {}; // Cache processed HTML for each mode
+let processedHTML = {}; // cache processed html for each mode
 let bannedSet = new Set();
-let tokens = []; // Tokenized text cache
+let tokens = []; // text cahce - tockenized
 
 // Zalgo Diacritics
 const upDiac = '̡̧̢̛̤̪̫̬̭̮̯̰̱̲̳̍̎̄̅̿̑̐̇̈̉̊̋̓̔̽͂̆̚';
 const midDiac = '̡̢̧̨̨̢̡̨̨̨̢̛̛̙̜̝̞̤̥̩̪̫̬̭̮̯̰̱̕̚';
 const downDiac = '̖̗̘̙̜̝̞̟̠̤̥̦̩̪̫̬̭̮̯̰̱̲̳̖̗̘̙̍̎̏̿̑̐̇̈̉̊̋̌̓̔̚̕̚';
 
-// Load files asynchronously
+// path resolver for local and GitHub Pages until site has own url
+function getAssetPath(filename) {
+  // conditional - if running on localhost, use relative path
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return `./${filename}`;
+  }
+  // conditional- if running on GitHub Pages, use absolute path
+  return `/lcsremixed/${filename}`;
+}
+
+// load files asynchronously
 async function loadAssets() {
   const [textResp, bannedResp] = await Promise.all([
-    fetch('full.txt').catch(err => { throw new Error('Failed to load full.txt: ' + err); }),
-    fetch('../bannedWords.txt').catch(err => { throw new Error('Failed to load bannedWords.txt: ' + err); })
+    fetch(getAssetPath('full.txt')).catch(err => { throw new Error('Failed to load full.txt: ' + err); }),
+    fetch(getAssetPath('bannedWords.txt')).catch(err => { throw new Error('Failed to load bannedWords.txt: ' + err); })
   ]);
 
   originalText = await textResp.text();
@@ -39,16 +49,16 @@ async function loadText(){
   try {
     await loadAssets();
 
-    // Tokenize text once
+    // tokenize - compare this to ensure quick load time
     tokenizeText();
 
-    // Start with quick lo-fi
-    contentEl.innerHTML = 'Loading censored content...';
+    // loading screen
+    contentEl.innerHTML = 'Loading...';
 
-    // Apply default censored content and start autoscroll
+    // default censored content + autoscroll starts
     setTimeout(() => applyDefaultCensored(), 200);
 
-    // Background precompute other modes lazily
+    // precompute everything except block
     setTimeout(() => {
       ['blur', 'dots', 'zalgo'].forEach(mode => {
         if (!processedHTML[mode]) processedHTML[mode] = render(mode);
@@ -56,7 +66,13 @@ async function loadText(){
     }, 1000);
 
   } catch(err) {
-    contentEl.textContent = 'Error loading: ' + err.message;
+    console.error('Critical error:', err);
+    contentEl.innerHTML = `
+      <div style="padding: 40px; text-align: center;">
+        <h2>Unable to load content</h2>
+        <p>Please try again later or check your network connection.</p>
+      </div>
+    `;
   }
 }
 
@@ -93,7 +109,7 @@ function applyDefaultCensored() {
   processedHTML['block'] = render('block');
   contentEl.innerHTML = processedHTML['block'];
 
-  // Now calculate height and start scroll with proper timing
+  // now calculate page height and start scroll with actual timing
   requestAnimationFrame(() => {
     maxScroll = contentEl.scrollHeight - viewportEl.clientHeight;
     if (maxScroll < 0) maxScroll = 0;
@@ -142,12 +158,19 @@ document.querySelectorAll('#obscureControls button').forEach(btn=>{
   });
 });
 
-aboutBtn.onclick = ()=> colophon.classList.add('open');
-closeBtn.onclick = ()=> colophon.classList.remove('open');
+aboutBtn.onclick = ()=> {
+  colophon.classList.add('open');
+  contentEl.classList.add('blurred');
+};
+closeBtn.onclick = ()=> {
+  colophon.classList.remove('open');
+  contentEl.classList.remove('blurred');
+};
 
 document.addEventListener('click',(e)=>{
   if(!colophon.contains(e.target) && !aboutBtn.contains(e.target)){
     colophon.classList.remove('open');
+    contentEl.classList.remove('blurred');
   }
 });
 
@@ -164,6 +187,25 @@ function tick(now){
   if(viewportEl.scrollTop>=maxScroll) viewportEl.scrollTop=0;
   lastFrame=now;
   rafId=requestAnimationFrame(tick);
+  
+  // monitoring performance
+  if (performance.memory && performance.memory.usedJSHeapSize > 200000000) {
+    console.warn('High memory usage detected');
+  }
 }
+
+// add mobile memory management
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    cancelAnimationFrame(rafId);
+    running = false;
+  } else {
+    start();
+  }
+});
+
+// preventingf touch scroll conflicts
+viewportEl.addEventListener('touchstart', (e) => e.preventDefault());
+viewportEl.addEventListener('touchmove', (e) => e.preventDefault());
 
 window.addEventListener('load', loadText);

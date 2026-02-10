@@ -81,30 +81,65 @@ a:hover { color: #e2e2e2; opacity: 0.8; }
   text-align: left;
 }
 
+#colophonContent {
+  padding: 80px 32px 32px 32px;
+  font-size: 14px;
+  text-align: left;
+  line-height: 1.6;
+}
+
 #colophonContent h2 {
   font-size: 16px;
   font-weight: 100;
   text-decoration: underline;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  text-align: center;
 }
 
-#colophonContent h3, #colophonContent h4 {
+.colophon-entry {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.colophon-entry .label {
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+.colophon-entry .value {
+  font-weight: 300;
+  color: #f7f7f7;
+}
+
+#colophonContent h3 {
   font-size: 12px;
   font-weight: 100;
   text-decoration: none;
-  margin-top: 16px;
+  margin-top: 24px;
   margin-bottom: 8px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-#colophonContent button {
-  margin-top: 20px;
-  padding: 8px 16px;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  color: #121212;
-  background-color: #f7f7f7;
-  font-weight: 100;
+#colophonContent p {
+  margin-bottom: 12px;
+  line-height: 1.6;
+  color: #f7f7f7;
+}
+
+#colophonContent a {
+  color: #888;
+  text-decoration: underline;
+}
+
+#colophonContent a:hover {
+  color: rgb(255, 255, 255);
 }
 
 #obscureControls {
@@ -126,7 +161,7 @@ a:hover { color: #e2e2e2; opacity: 0.8; }
   font-weight: 100;
   font-size: 12px;
   cursor: pointer;
-  color: #1e00ff;
+  color: rgb(44, 0, 239);
   margin: 0 6px;
 }
 
@@ -145,3 +180,4 @@ a:hover { color: #e2e2e2; opacity: 0.8; }
 .dots { letter-spacing: 0.08em; font-size: 110%; }
 .zalgo { unicode-bidi: isolate; font-size: 115%; letter-spacing: 0.04em; line-height: 0.85; position: relative; z-index: 5; filter: blur(1.5px); will-change: filter; }
 .blocked { font-weight: bold; text-decoration: line-through; }
+
