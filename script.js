@@ -3,6 +3,8 @@ const viewportEl = document.getElementById('viewport');
 const colophon = document.getElementById('colophon');
 const aboutBtn = document.getElementById('aboutBtn');
 const closeBtn = document.getElementById('closeColophon');
+const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
 
 let maxScroll = 0;
 let speed = 40;
@@ -113,7 +115,7 @@ function applyDefaultCensored() {
   requestAnimationFrame(() => {
     maxScroll = contentEl.scrollHeight - viewportEl.clientHeight;
     if (maxScroll < 0) maxScroll = 0;
-    start();
+    if (!isMobile) start(); 
   });
 }
 
@@ -158,19 +160,12 @@ document.querySelectorAll('#obscureControls button').forEach(btn=>{
   });
 });
 
-aboutBtn.onclick = ()=> {
-  colophon.classList.add('open');
-  contentEl.classList.add('blurred');
-};
-closeBtn.onclick = ()=> {
-  colophon.classList.remove('open');
-  contentEl.classList.remove('blurred');
-};
+aboutBtn.onclick = ()=> colophon.classList.add('open');
+closeBtn.onclick = ()=> colophon.classList.remove('open');
 
 document.addEventListener('click',(e)=>{
   if(!colophon.contains(e.target) && !aboutBtn.contains(e.target)){
     colophon.classList.remove('open');
-    contentEl.classList.remove('blurred');
   }
 });
 

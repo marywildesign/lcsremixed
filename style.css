@@ -181,3 +181,8 @@ a:hover { color: #e2e2e2; opacity: 0.8; }
 .zalgo { unicode-bidi: isolate; font-size: 115%; letter-spacing: 0.04em; line-height: 0.85; position: relative; z-index: 5; filter: blur(1.5px); will-change: filter; }
 .blocked { font-weight: bold; text-decoration: line-through; }
 
+@media (max-width: 768px) {
+  .blur { filter: blur(2px); }
+  .zalgo { filter: blur(0.75px); }
+}
+
